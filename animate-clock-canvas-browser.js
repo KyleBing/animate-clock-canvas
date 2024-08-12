@@ -107,12 +107,14 @@ class AnimateClockCanvas {
         contextClock.clearRect(0, 0, this.configFrame.width, this.configFrame.height)
 
 
-
         // 背景，没有 bgColor 的时候，背景就是透明的
         if (this.configFrame.bgColor){
             contextClock.fillStyle = this.configFrame.bgColor
             contextClock.fillRect(0,0,this.configFrame.width, this.configFrame.height)
         }
+
+        // 居中
+        contextClock.translate(this.configFrame.center.x, this.configFrame.center.y)
 
         this.drawClockPanel(contextClock, this.configFrame.center)
         this.drawCenter(contextClock, this.configFrame.center)
@@ -131,41 +133,37 @@ class AnimateClockCanvas {
         const lineHeight = 50
         const offsetCenter = 200
         ctx.save()
-        ctx.translate(center.x, center.y)
-
         for (let i = 0; i < 12; i++) {
             ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
             ctx.rotate(Math.PI * 30 / 180)
         }
         ctx.fillStyle = '#2185ff'
+        ctx.fillText(this.configClock.timeLine, 0 ,this.configFrame.height)
+
         ctx.fill()
         ctx.restore()
     }
 
-    drawPointer(ctx, center){
-        const seconds = this.date.getSeconds()
-        const rotateAngle = Math.PI * 2 * (seconds/60)
-        const lineWidth = 10
-        const lineHeight = 30
-        const offsetCenter = 100
-        ctx.save()
-        ctx.translate(center.x, center.y)
-
-        for (let i = 0; i < 12; i++) {
-            ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
-            ctx.rotate(rotateAngle)
-        }
-        ctx.fillStyle = '#00ec1f'
-        ctx.fill()
-        ctx.restore()
-    }
 
     drawCenter(ctx, center){
         ctx.save()
-        ctx.translate(center.x, center.y)
         ctx.arc(0,0,20,0,Math.PI * 2)
         ctx.fillStyle = '#ff0064'
         ctx.fill()
     }
+
+    drawPointer(ctx, center){
+        const ms = this.date.getMilliseconds()
+        const seconds = this.date.getSeconds()
+        const rotateAngle = Math.PI * 2 * (ms/1000/60 + seconds/60)  // 秒 + 毫秒的角度
+        const lineWidth = 10
+        const lineHeight = 30
+        const offsetCenter = 100
+        ctx.rotate(rotateAngle)
+        ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
+        ctx.fillStyle = '#00ec1f'
+        ctx.fill()
+    }
+
 }
 
