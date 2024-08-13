@@ -27,8 +27,8 @@ class AnimateClockCanvas {
         }
         this.configClock = {
             panelRadius: 600,       // 表盘大小
-            widthSecondPointer: 1,  // 秒针 宽度
-            widthMinutePointer: 10, // 分针 宽度
+            widthSecondPointer: 3,  // 秒针 宽度
+            widthMinutePointer: 20, // 分针 宽度
             widthHourPointer: 30,   // 时针 宽度
             pointerCenterOffset: 20,// 指针 偏离中心距离
 
@@ -198,8 +198,8 @@ class AnimateClockCanvas {
         const seconds = new Date().getSeconds()
         const minutes = new Date().getMinutes()
         const rotateAngle = Math.PI * 2 * (minutes / 60) + Math.PI   + Math.PI / 30 * ( ms / 1000 / 60 + seconds / 60)     // 秒 + 毫秒的角度
-        const lineWidth = 10
-        const lineHeight = this.configClock.panelRadius * (4/6)
+        const lineWidth = this.configClock.widthMinutePointer
+        const lineHeight = this.configClock.panelRadius * (5/6)
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
