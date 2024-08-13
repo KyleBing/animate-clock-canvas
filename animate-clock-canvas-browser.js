@@ -26,10 +26,19 @@ class AnimateClockCanvas {
             bgColor: bgColor
         }
         this.configClock = {
-            timeLine: 0,                           // 时间线
+            panelRadius: 600,       // 表盘大小
+            widthSecondPointer: 1,  // 秒针 宽度
+            widthMinutePointer: 10, // 分针 宽度
+            widthHourPointer: 30,   // 时针 宽度
+            pointerCenterOffset: 20,// 指针 偏离中心距离
 
+            fontSize: 50, // 刻度大小
+
+            lengthSplitHour: 80,   // 刻度长度: 时
+            lengthSplitMinute: 20, // 刻度长度: 分
+
+            timeLine: 0,                           // 时间线
             timeInit: new Date().getTime(),
-            movement: 1,                           // 运动速度
         }
         this.init()
 
@@ -89,17 +98,18 @@ class AnimateClockCanvas {
             contextClock.fillRect(0, 0, this.configFrame.width, this.configFrame.height)
         }
 
-        this.drawClockPanelHour(contextClock, this.configFrame.center)
         this.drawClockPanelMinutes(contextClock, this.configFrame.center)
+        this.drawClockPanelHour(contextClock, this.configFrame.center)
         this.drawRefLines(contextClock, this.configFrame.center)
-        this.drawCenter(contextClock, this.configFrame.center)
-        this.drawPointerSecond(contextClock, this.configFrame.center)
+        // this.drawCenter(contextClock, this.configFrame.center)
         this.drawPointerMinute(contextClock, this.configFrame.center)
         this.drawPointerHour(contextClock, this.configFrame.center)
+        this.drawPointerSecond(contextClock, this.configFrame.center)
+
 
 
         // show timeline
-        contextClock.fillStyle = 'black'
+        // contextClock.fillStyle = 'black'
         contextClock.font = '30px sans-serf'
         contextClock.fillText(String(this.configClock.timeLine), 20 ,this.configFrame.height - 20)
 
@@ -111,7 +121,7 @@ class AnimateClockCanvas {
     }
 
     drawRefLines(ctx, center){
-        const lineLength = 1000
+        const lineLength = this.configClock.panelRadius * 3
         ctx.save()
         ctx.beginPath()
         ctx.moveTo(center.x - lineLength/2, center.y)
@@ -127,32 +137,34 @@ class AnimateClockCanvas {
     // 画时钟表盘: 时
     drawClockPanelHour(ctx, center){
         const lineWidth = 10
-        const lineHeight = 50
-        const offsetCenter = 300
+        const lineHeight = this.configClock.lengthSplitHour
+        const offsetCenter = this.configClock.panelRadius
+        const fontWeight = this.configClock.fontSize
         ctx.save()
         ctx.translate(center.x, center.y)
+        ctx.fillStyle = '#151517'
         for (let i = 0; i < 12; i++) {
             ctx.rotate(Math.PI / 6)
-            ctx.rect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.textAlign = 'center'
+            ctx.font = '50px Galvji'
+            ctx.fillText(i + 1, 0, -offsetCenter - 30,)
         }
-        ctx.fillStyle = '#2185ff'
-        ctx.fill()
         ctx.restore()
     }
 
     // 画时钟表盘：分钟
     drawClockPanelMinutes(ctx, center){
         const lineWidth = 4
-        const lineHeight = 30
-        const offsetCenter = 300
+        const lineHeight = this.configClock.lengthSplitMinute
+        const offsetCenter = this.configClock.panelRadius
         ctx.save()
         ctx.translate(center.x, center.y)
+        ctx.fillStyle = '#787878'
         for (let i = 0; i < 60; i++) {
             ctx.rotate(Math.PI / 30)
-            ctx.rect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
         }
-        ctx.fillStyle = '#e7e7e7'
-        ctx.fill()
         ctx.restore()
     }
 
@@ -161,6 +173,7 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.arc(0, 0, centerRadius, 0, Math.PI * 2)
+        ctx.closePath()
         ctx.fillStyle = '#12ff00'
         ctx.fill()
         ctx.restore()
@@ -170,45 +183,41 @@ class AnimateClockCanvas {
         const ms = new Date().getMilliseconds()
         const seconds = new Date().getSeconds()
         const rotateAngle = Math.PI * 2 * (ms / 1000 / 60 + seconds / 60)  + Math.PI  // 秒 + 毫秒的角度
-        const lineWidth = 2
-        const lineHeight = 250
-        const offsetCenter = 50
+        const lineWidth = this.configClock.widthSecondPointer
+        const lineHeight = this.configClock.panelRadius * (6/6)
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
         ctx.fillStyle = '#ff0000'
-        ctx.fill()
+        ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
 
     drawPointerMinute(ctx, center){
-        const seconds = new Date().getMinutes()
-        const rotateAngle = Math.PI * 2 * (seconds / 60) + Math.PI  // 秒 + 毫秒的角度
+        const ms = new Date().getMilliseconds()
+        const seconds = new Date().getSeconds()
+        const minutes = new Date().getMinutes()
+        const rotateAngle = Math.PI * 2 * (minutes / 60) + Math.PI   + Math.PI / 30 * ( ms / 1000 / 60 + seconds / 60)     // 秒 + 毫秒的角度
         const lineWidth = 10
-        const lineHeight = 150
-        const offsetCenter = 50
+        const lineHeight = this.configClock.panelRadius * (4/6)
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
-        ctx.fillStyle = '#2185ff'
-        ctx.fill()
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
 
     drawPointerHour(ctx, center){
         const hours = new Date().getHours()
         const rotateAngle = Math.PI * 2 * (hours / 12) + Math.PI // 秒 + 毫秒的角度
-        const lineWidth = 20
-        const lineHeight = 100
-        const offsetCenter = 50
+        const lineWidth = this.configClock.widthHourPointer
+        const lineHeight = this.configClock.panelRadius * (3/6)
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.rect(-lineWidth/2, offsetCenter, lineWidth, lineHeight)
-        ctx.fillStyle = '#ff0000'
-        ctx.fill()
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
 
