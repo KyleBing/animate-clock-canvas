@@ -9,7 +9,10 @@
  * @platform: NPM
  */
 
-const ClockArray = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
+const ClockArray = {
+    LM: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'],
+    ALB: ['1','2','3','4','5','6','7','8','9','10','11','12']
+}
 
 class AnimateClockCanvas {
     /**
@@ -29,20 +32,26 @@ class AnimateClockCanvas {
             bgColor: bgColor
         }
         this.configClock = {
-            panelRadius: 600,       // 表盘大小
-            widthSecondPointer: 3,  // 秒针 宽度
-            widthMinutePointer: 20, // 分针 宽度
-            widthHourPointer: 30,   // 时针 宽度
-            pointerCenterOffset: 20,// 指针 偏离中心距离
+            panelRadius: 600,              // 表盘大小
+            widthSecondPointer: 3,         // 秒针 宽度
+            widthMinutePointer: 20,        // 分针 宽度
+            widthHourPointer: 30,          // 时针 宽度
+            pointerCenterOffset: 20,       // 指针 偏离中心距离
 
-            fontSize: 50, // 刻度大小
+            fontSizeHour: 50,              // 刻度大小
+            fontSizeMinute: 50,            // 刻度大小
 
-            lengthSplitHour: 80,   // 刻度长度: 时
-            lengthSplitMinute: 20, // 刻度长度: 分
-            lengthSplitSecond: 10, // 刻度长度: 秒
+            lengthSplitHour: 80,           // 刻度长度: 时
+            lengthSplitMinute: 30,         // 刻度长度: 分
+            lengthSplitSecond: 20,         // 刻度长度: 秒
 
-            timeLine: 0,                           // 时间线
-            timeInit: new Date().getTime(),
+            lineWidthHour: 10,             // 刻度宽：时
+            lineWidthMinute: 4,            // 刻度宽：分
+            lineWidthSecond: 1,            // 刻度宽：秒
+
+            timeLine: 0,                   // 时间轴
+
+            timeInit: new Date().getTime(),//  初始时间戳
         }
 
         this.rotateAngleHour = 0
@@ -107,7 +116,7 @@ class AnimateClockCanvas {
         }
 
 
-        // this.drawClockPanelSeconds(contextClock, this.configFrame.center)
+        this.drawClockPanelSeconds(contextClock, this.configFrame.center)
         this.drawClockPanelMinutes(contextClock, this.configFrame.center)
         this.drawClockPanelHour(contextClock, this.configFrame.center)
         // this.drawRefLines(contextClock, this.configFrame.center)
@@ -156,26 +165,23 @@ class AnimateClockCanvas {
 
     // 画时钟表盘: 时
     drawClockPanelHour(ctx, center){
-        const lineWidth = 10
         const lineHeight = this.configClock.lengthSplitHour
         const offsetCenter = this.configClock.panelRadius
-        const fontWeight = this.configClock.fontSize
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = '#151517'
         for (let i = 0; i < 12; i++) {
             ctx.rotate(Math.PI / 6)
-            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillRect(-this.configClock.lineWidthHour / 2, -offsetCenter, this.configClock.lineWidthHour, lineHeight)
             ctx.textAlign = 'center'
-            ctx.font = '50px Galvji'
-            ctx.fillText(ClockArray[i], 0, -offsetCenter - 30,)
+            ctx.font = `${this.configClock.fontSizeHour}px Galvji`
+            ctx.fillText(ClockArray['ALB'][i], 0, -offsetCenter - 30,)
         }
         ctx.restore()
     }
 
     // 画时钟表盘：分钟
     drawClockPanelMinutes(ctx, center){
-        const lineWidth = 4
         const lineHeight = this.configClock.lengthSplitMinute
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
@@ -183,7 +189,7 @@ class AnimateClockCanvas {
         ctx.fillStyle = '#787878'
         for (let i = 0; i < 60; i++) {
             ctx.rotate(Math.PI / 30)
-            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
             ctx.textAlign = 'center'
             ctx.font = '20px Galvji'
             ctx.fillText(i + 1, 0, -offsetCenter - 100,)
@@ -192,7 +198,6 @@ class AnimateClockCanvas {
     }
     // 画时钟表盘：秒
     drawClockPanelSeconds(ctx, center){
-        const lineWidth = 4
         const lineHeight = this.configClock.lengthSplitSecond
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
@@ -200,7 +205,7 @@ class AnimateClockCanvas {
         ctx.fillStyle = '#787878'
         for (let i = 0; i < 300; i++) {
             ctx.rotate(Math.PI * 2 / 300)
-            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillRect(-this.configClock.lineWidthSecond / 2, -offsetCenter, this.configClock.lineWidthSecond, lineHeight)
         }
         ctx.restore()
     }
