@@ -16,7 +16,8 @@ class AnimateClockCanvas {
      * @param bgColor 背景颜色
      */
     constructor( bgColor ) {
-        this.isPlayConstantly = true // 默认自动播放
+        this.isPlayConstantly = true // 是否一直 draw
+        this.isShowDetailInfo = true // 是否显示所有参数值
 
         this.configFrame = {
             center: {
@@ -43,6 +44,11 @@ class AnimateClockCanvas {
             timeLine: 0,                           // 时间线
             timeInit: new Date().getTime(),
         }
+
+        this.rotateAngleHour = 0
+        this.rotateAngleMinute = 0
+        this.rotateAngleSecond = 0
+
         this.init()
 
         window.onresize = () => {
@@ -69,7 +75,6 @@ class AnimateClockCanvas {
         clockLayer.style.top = '0'
         clockLayer.style.left = '0'
     }
-
 
     init(){
         this.configFrame.height = innerHeight * 2
@@ -112,17 +117,27 @@ class AnimateClockCanvas {
         this.drawPointerSecond(contextClock, this.configFrame.center)
 
 
-
-        // show timeline
-        // contextClock.fillStyle = 'black'
-        contextClock.font = '30px sans-serf'
-        contextClock.fillText(String(this.configClock.timeLine), 20 ,this.configFrame.height - 20)
+        // 左下角显示所有参数值
+        if (this.isShowDetailInfo){
+            this.showAllInfo(contextClock)
+        }
 
         if (this.isPlayConstantly) {
             window.requestAnimationFrame(() => {
                 this.draw()
             })
         }
+    }
+
+    // 打印输出所有参数值
+    showAllInfo(ctx){
+        ctx.fillStyle = 'gray'
+        const fontSize = 30
+        ctx.font = `${fontSize - 3}px Galvji`
+        ctx.fillText(`Rotation Hour:  deg ${this.rotateAngleHour}`, 30 ,this.configFrame.height - ( 20 + fontSize * 1 ) )
+        ctx.fillText(`Rotation Minute:  deg ${this.rotateAngleMinute}`, 30 ,this.configFrame.height - ( 20 + fontSize * 2 ) )
+        ctx.fillText(`Rotation Second:  deg ${this.rotateAngleSecond}`, 30 ,this.configFrame.height - ( 20 + fontSize * 3 ) )
+        ctx.fillText(`Timeline: ${this.configClock.timeLine}`, 30 ,this.configFrame.height - ( 20 + fontSize * 4 ) )
     }
 
     drawRefLines(ctx, center){
@@ -201,10 +216,12 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
+    // 秒针动作
     drawPointerSecond(ctx, center){
         const ms = new Date().getMilliseconds()
         const seconds = new Date().getSeconds()
         const rotateAngle = Math.PI * 2 * (ms / 1000 / 60 + seconds / 60)  + Math.PI  // 秒 + 毫秒的角度
+        this.rotateAngleSecond = rotateAngle
         const lineWidth = this.configClock.widthSecondPointer
         const lineHeight = this.configClock.panelRadius * (6/6)
         ctx.save()
@@ -215,11 +232,13 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
+    // 分针动作
     drawPointerMinute(ctx, center){
         const ms = new Date().getMilliseconds()
         const seconds = new Date().getSeconds()
         const minutes = new Date().getMinutes()
         const rotateAngle = Math.PI * 2 * (minutes / 60) + Math.PI   + Math.PI / 30 * ( ms / 1000 / 60 + seconds / 60)     // 秒 + 毫秒的角度
+        this.rotateAngleMinute = rotateAngle
         const lineWidth = this.configClock.widthMinutePointer
         const lineHeight = this.configClock.panelRadius * (5/6)
         ctx.save()
@@ -230,10 +249,12 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
+    // 时针动作
     drawPointerHour(ctx, center){
         const minutes = new Date().getMinutes()
         const hours = new Date().getHours()
         const rotateAngle = Math.PI * 2 * (hours / 12) + Math.PI +  Math.PI / 6 * (minutes / 60) // 秒 + 毫秒的角度
+        this.rotateAngleHour = rotateAngle
         const lineWidth = this.configClock.widthHourPointer
         const lineHeight = this.configClock.panelRadius * (3/6)
         ctx.save()
