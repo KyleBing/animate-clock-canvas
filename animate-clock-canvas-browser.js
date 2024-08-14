@@ -178,9 +178,14 @@ class AnimateClockCanvas {
         const lineWidth = 4
         const lineHeight = this.configClock.lengthSplitMinute
         const offsetCenter = this.configClock.panelRadius
+        const ms = new Date().getMilliseconds()
+        const seconds = new Date().getSeconds()
+        const rotateAngle = Math.PI * 2 * (ms / 1000 / 60 + seconds / 60)  + Math.PI  // 秒 + 毫秒的角度
+
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = '#787878'
+        ctx.rotate(rotateAngle + Math.PI)
         for (let i = 0; i < 60; i++) {
             ctx.rotate(Math.PI / 30)
             ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
@@ -266,4 +271,3 @@ class AnimateClockCanvas {
     }
 
 }
-
