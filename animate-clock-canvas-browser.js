@@ -256,9 +256,10 @@ class AnimateClockCanvas {
 
     // 时针动作
     drawPointerHour(ctx, center){
+        const seconds = new Date().getSeconds()
         const minutes = new Date().getMinutes()
         const hours = new Date().getHours()
-        const rotateAngle = Math.PI * 2 * (hours / 12) + Math.PI +  Math.PI / 6 * (minutes / 60) // 秒 + 毫秒的角度
+        const rotateAngle = Math.PI * 2 * (hours / 12) + Math.PI +  Math.PI / 6 * ((minutes + seconds/60) / 60) // 秒 + 毫秒的角度
         this.rotateAngleHour = rotateAngle
         const lineWidth = this.configClock.widthHourPointer
         const lineHeight = this.configClock.panelRadius * (3/6)
