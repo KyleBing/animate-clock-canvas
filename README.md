@@ -1,3 +1,14 @@
-# animate-clock-canvas
+# Canvas Analog Clock
 
-一个显示时间的 canvas
+显示模拟时钟的 canvas 网页小应用。
+
+
+浏览器可设置参数：
+
+| 参数    | 默认值     | 可能的值            |
+|-------|---------|-----------------|
+| theme | `white` | `white` `black` |
+
+例子：
+- 白色 [http://kylebing.cn/tools/clock-a?theme=white](http://kylebing.cn/tools/clock-a?theme=white)
+- 黑色 [http://kylebing.cn/tools/clock-a?theme=black](http://kylebing.cn/tools/clock-a?theme=black)

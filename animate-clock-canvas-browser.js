@@ -9,16 +9,35 @@
  * @platform: NPM
  */
 
-const ClockArray = {
+const CLOCK_ARRAY = {
     LM: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'],
     ALB: ['1','2','3','4','5','6','7','8','9','10','11','12']
 }
 
+const THEME = {
+    white: {
+        bg: 'white',
+        pointerSecond: '#ff0000',
+        pointerHour: 'black',
+        colorMain: 'black',
+        colorSecond: '#787878',
+        referenceLine: 'magenta'   // 参考线
+    },
+    black: {
+        bg: 'black',
+        pointerSecond: '#ff0000',
+        pointerHour: 'white',
+        colorMain: '#d8d8d8',
+        colorSecond: '#9e9e9e',
+        referenceLine: 'magenta'   // 参考线
+    }
+}
+
 class AnimateClockCanvas {
     /**
-     * @param bgColor 背景颜色
+     * @param theme 'white' | 'black'
      */
-    constructor( bgColor ) {
+    constructor( theme ) {
         this.isPlayConstantly = true // 是否一直 draw
         this.isShowDetailInfo = true // 是否显示所有参数值
 
@@ -29,8 +48,8 @@ class AnimateClockCanvas {
             },
             width : 1200,
             height: 300,
-            bgColor: bgColor
         }
+        this.theme = theme || 'white'
         this.configClock = {
             panelRadius: 600,              // 表盘大小
             widthSecondPointer: 3,         // 秒针 宽度
@@ -111,7 +130,11 @@ class AnimateClockCanvas {
 
         // 背景，没有 bgColor 的时候，背景就是透明的
         if (this.configFrame.bgColor){
-            contextClock.fillStyle = this.configFrame.bgColor
+
+        }
+
+        if (this.theme) {
+            contextClock.fillStyle = THEME[this.theme].bg
             contextClock.fillRect(0, 0, this.configFrame.width, this.configFrame.height)
         }
 
@@ -157,7 +180,7 @@ class AnimateClockCanvas {
         ctx.lineTo(center.x + lineLength/2, center.y)
         ctx.moveTo(center.x, center.y - lineLength/2)
         ctx.lineTo(center.x, center.y + lineLength/2)
-        ctx.strokeStyle = 'magenta'
+        ctx.strokeStyle = THEME[this.theme].referenceLine
         ctx.closePath()
         ctx.stroke()
         ctx.restore()
@@ -169,13 +192,13 @@ class AnimateClockCanvas {
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
         ctx.translate(center.x, center.y)
-        ctx.fillStyle = '#151517'
+        ctx.fillStyle = THEME[this.theme].colorMain
         for (let i = 0; i < 12; i++) {
             ctx.rotate(Math.PI / 6)
             ctx.fillRect(-this.configClock.lineWidthHour / 2, -offsetCenter, this.configClock.lineWidthHour, lineHeight)
             ctx.textAlign = 'center'
             ctx.font = `${this.configClock.fontSizeHour}px Galvji`
-            ctx.fillText(ClockArray['ALB'][i], 0, -offsetCenter - 30,)
+            ctx.fillText(CLOCK_ARRAY['ALB'][i], 0, -offsetCenter - 30,)
         }
         ctx.restore()
     }
@@ -186,7 +209,7 @@ class AnimateClockCanvas {
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
         ctx.translate(center.x, center.y)
-        ctx.fillStyle = '#787878'
+        ctx.fillStyle = THEME[this.theme].colorSecond
         for (let i = 0; i < 60; i++) {
             ctx.rotate(Math.PI / 30)
             ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
@@ -202,7 +225,7 @@ class AnimateClockCanvas {
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
         ctx.translate(center.x, center.y)
-        ctx.fillStyle = '#787878'
+        ctx.fillStyle = THEME[this.theme].colorSecond
         for (let i = 0; i < 300; i++) {
             ctx.rotate(Math.PI * 2 / 300)
             ctx.fillRect(-this.configClock.lineWidthSecond / 2, -offsetCenter, this.configClock.lineWidthSecond, lineHeight)
@@ -216,7 +239,7 @@ class AnimateClockCanvas {
         ctx.translate(center.x, center.y)
         ctx.arc(0, 0, centerRadius, 0, Math.PI * 2)
         ctx.closePath()
-        ctx.fillStyle = '#000000'
+        ctx.fillStyle = THEME[this.theme].colorMain
         ctx.fill()
         ctx.restore()
     }
@@ -232,7 +255,7 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = '#ff0000'
+        ctx.fillStyle = THEME[this.theme].pointerSecond
         ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
@@ -249,7 +272,7 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = '#000000'
+        ctx.fillStyle = THEME[this.theme].pointerHour
         ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
@@ -266,7 +289,7 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = '#000000'
+        ctx.fillStyle = THEME[this.theme].pointerHour
         ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
         ctx.restore()
     }
