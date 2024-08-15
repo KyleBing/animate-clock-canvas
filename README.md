@@ -1,4 +1,8 @@
+
+<img src="./favicon.png" width="120">
+
 # Canvas Analog Clock
+
 
 显示模拟时钟的 canvas 网页小应用。
 
