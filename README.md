@@ -16,3 +16,7 @@
 例子：
 - 白色 [http://kylebing.cn/tools/clock-a?theme=white](http://kylebing.cn/tools/clock-a?theme=white)
 - 黑色 [http://kylebing.cn/tools/clock-a?theme=black](http://kylebing.cn/tools/clock-a?theme=black)
+
+
+
+> CSDN 教程: [https://blog.csdn.net/KimBing/article/details/141223741](https://blog.csdn.net/KimBing/article/details/141223741)
