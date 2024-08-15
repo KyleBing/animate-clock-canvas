@@ -166,9 +166,9 @@ class AnimateClockCanvas {
         ctx.fillStyle = 'gray'
         const fontSize = 30
         ctx.font = `${fontSize - 3}px Galvji`
-        ctx.fillText(`Rotation Hour:  deg ${this.rotateAngleHour}`, 30 ,this.configFrame.height - ( 20 + fontSize * 1 ) )
-        ctx.fillText(`Rotation Minute:  deg ${this.rotateAngleMinute}`, 30 ,this.configFrame.height - ( 20 + fontSize * 2 ) )
-        ctx.fillText(`Rotation Second:  deg ${this.rotateAngleSecond}`, 30 ,this.configFrame.height - ( 20 + fontSize * 3 ) )
+        ctx.fillText(`Rotation Hour:  rad ${this.rotateAngleHour}`, 30 ,this.configFrame.height - ( 20 + fontSize * 1 ) )
+        ctx.fillText(`Rotation Minute:  rad ${this.rotateAngleMinute}`, 30 ,this.configFrame.height - ( 20 + fontSize * 2 ) )
+        ctx.fillText(`Rotation Second:  rad ${this.rotateAngleSecond}`, 30 ,this.configFrame.height - ( 20 + fontSize * 3 ) )
         ctx.fillText(`Timeline: ${this.configClock.timeLine}`, 30 ,this.configFrame.height - ( 20 + fontSize * 4 ) )
     }
 
