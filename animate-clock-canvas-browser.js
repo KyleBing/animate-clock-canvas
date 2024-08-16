@@ -40,14 +40,16 @@ class AnimateClockCanvas {
      * @param theme white | black   主题
      * @param pointerType rounded | pointer   指针类型
      * @param numberType  ALB | LM  数字类型
+     * @param isSkipHourLabel 分钟数是否跳过小时数显示
      */
-    constructor( theme, pointerType, numberType ) {
+    constructor( theme, pointerType, numberType, isSkipHourLabel ) {
         this.isPlayConstantly = true // 是否一直 draw
         this.isShowDetailInfo = true // 是否显示所有参数值
 
         this.theme = theme || 'white'
-        this.numberType = numberType.toUpperCase() || 'ALB'
+        this.numberType = (numberType || 'ALB').toUpperCase()
         this.pointerType = pointerType || 'rounded'
+        this.isSkipHourLabel = isSkipHourLabel === '1'
 
         this.configFrame = {
             center: {
@@ -66,10 +68,10 @@ class AnimateClockCanvas {
             pointerCenterOffset: 20,       // 指针 偏离中心距离
 
             labelFontSizeHour: 60,              // 刻度字体大小：小时
-            labelFontSizeMinute: 25,            // 刻度字体大小：分钟
+            labelFontSizeMinute: 20,            // 刻度字体大小：分钟
 
             labelOffsetHour: 30,           // 刻度字体偏移量：小时
-            labelOffsetMinute: 20,        // 刻度字体偏移量：分钟
+            labelOffsetMinute: 110,        // 刻度字体偏移量：分钟
 
             lengthSplitHour: 80,           // 刻度长度: 时
             lengthSplitMinute: 30,         // 刻度长度: 分
@@ -226,9 +228,14 @@ class AnimateClockCanvas {
             ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
             ctx.textAlign = 'center'
             ctx.font = `${this.configClock.labelFontSizeMinute}px Galvji`
-            if ((i+1)%5!==0){
+            if (this.isSkipHourLabel){
+                if ((i+1)%5!==0){
+                    ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
+                }
+            } else {
                 ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
             }
+
         }
         ctx.restore()
     }
