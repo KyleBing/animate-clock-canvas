@@ -227,16 +227,32 @@ class AnimateClockCanvas {
     drawClockPanelMinutes(ctx, center){
         const lineHeight = this.configClock.lengthSplitMinute
         const offsetCenter = this.configClock.panelRadius
+        const seconds = new Date().getSeconds()
+        const ms = new Date().getMilliseconds()
+
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = THEME[this.theme].colorSecond
         for (let i = 0; i < 60; i++) {
+
+            // 放大实时秒数
+            const distance1 = Math.abs((seconds + ms / 1000) - (i + 1))  // 距离当前秒数的距离
+            const distance2 = seconds + ms / 1000
+            const distance = Math.min(distance1, distance2)
+            let fontSize = this.configClock.labelFontSizeMinute
+            if (distance < 1.5){
+                fontSize = (2.5 - distance) * fontSize
+            } else {
+
+            }
+
             ctx.rotate(Math.PI / 30)
             ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
             ctx.textAlign = 'center'
-            ctx.font = `${this.configClock.labelFontSizeMinute}px Galvji`
+            ctx.font = `${fontSize}px Galvji`
+
             if (this.isSkipHourLabel){
-                if ((i+1)%5!==0){
+                if ((i + 1) % 5 !== 0) {
                     ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
                 }
             } else {
