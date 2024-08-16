@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="./favicon.png">
 
     <title>时钟</title>
-    <script src="animate-clock-canvas-browser.js?v=20240816180032"></script>
+    <script src="animate-clock-canvas-browser.js?v=20240816180757"></script>
 
     <script>
         let queryData = getSearchData()
@@ -41,6 +41,43 @@
                 return obj;
             } else {
                 return false;
+            }
+        }
+
+        onkeydown = event => {
+            console.log(event.key)
+            switch (event.key){
+                case 'f'          : this.switchFullScreen() ; break // full screen
+            }
+        }
+
+        function switchFullScreen(){
+            let element = document.documentElement
+            // 判断是否已经是全屏
+            // 如果是全屏，退出
+            if (this.isFullScreen) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen()
+                } else if (document.webkitCancelFullScreen) {
+                    document.webkitCancelFullScreen()
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen()
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen()
+                }
+                this.isFullScreen = false
+            } else {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen()
+                } else if (element.webkitRequestFullScreen) {
+                    element.webkitRequestFullScreen()
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen()
+                } else if (element.msRequestFullscreen) {
+                    // IE11
+                    element.msRequestFullscreen()
+                }
+                this.isFullScreen = true
             }
         }
 

@@ -179,10 +179,17 @@ class AnimateClockCanvas {
         ctx.fillStyle = 'gray'
         const fontSize = 30
         ctx.font = `${fontSize - 3}px Galvji`
-        ctx.fillText(`Rotation Hour:  rad ${this.rotateAngleHour}`, 30 ,this.configFrame.height - ( 20 + fontSize * 1 ) )
-        ctx.fillText(`Rotation Minute:  rad ${this.rotateAngleMinute}`, 30 ,this.configFrame.height - ( 20 + fontSize * 2 ) )
-        ctx.fillText(`Rotation Second:  rad ${this.rotateAngleSecond}`, 30 ,this.configFrame.height - ( 20 + fontSize * 3 ) )
-        ctx.fillText(`Timeline: ${this.configClock.timeLine}`, 30 ,this.configFrame.height - ( 20 + fontSize * 4 ) )
+
+        const infos = [
+            `Key F: Toggle full screen mode`,
+            `Rotation Hour:  rad ${this.rotateAngleHour}`,
+            `Rotation Minute:  rad ${this.rotateAngleMinute}`,
+            `Rotation Second:  rad ${this.rotateAngleSecond}`,
+            `Timeline: ${this.configClock.timeLine}`
+        ]
+        infos.forEach((item , index) => {
+            ctx.fillText(item, 30 ,this.configFrame.height - ( 20 + fontSize * index ) )
+        })
     }
 
     drawRefLines(ctx, center){
