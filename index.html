@@ -12,13 +12,13 @@
     <!-- apple-touch-icon -->
     <link rel="apple-touch-icon" href="./favicon.png">
 
-    <title>模拟时钟</title>
-    <script src="animate-clock-canvas-browser.js?v=20240815223147"></script>
+    <title>时钟</title>
+    <script src="animate-clock-canvas-browser.js?v=20240816172600"></script>
 
     <script>
         let queryData = getSearchData()
         console.log(queryData)
-        let animateClockCanvas = new AnimateClockCanvas(queryData.theme,)
+        let animateClockCanvas = new AnimateClockCanvas(queryData.theme, queryData.type)
 
         /****************************
          *

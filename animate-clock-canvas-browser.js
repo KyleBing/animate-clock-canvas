@@ -18,7 +18,8 @@ const THEME = {
     white: {
         bg: 'white',
         pointerSecond: '#ff0000',
-        pointerHour: 'black',
+        pointerHourMinute: 'black',
+        pointerHourMinuteStroke: 'white',
         colorMain: 'black',
         colorSecond: '#787878',
         referenceLine: 'magenta'   // 参考线
@@ -26,7 +27,8 @@ const THEME = {
     black: {
         bg: 'black',
         pointerSecond: '#ff0000',
-        pointerHour: 'white',
+        pointerHourMinute: 'white',
+        pointerHourMinuteStroke: 'black',
         colorMain: '#d8d8d8',
         colorSecond: '#9e9e9e',
         referenceLine: 'magenta'   // 参考线
@@ -35,11 +37,15 @@ const THEME = {
 
 class AnimateClockCanvas {
     /**
-     * @param theme 'white' | 'black'
+     * @param theme white | black   主题
+     * @param pointerType rounded | pointer   指针类型
      */
-    constructor( theme ) {
+    constructor( theme, pointerType ) {
         this.isPlayConstantly = true // 是否一直 draw
         this.isShowDetailInfo = true // 是否显示所有参数值
+
+        this.theme = theme || 'white'
+        this.pointerType = pointerType || 'rounded'
 
         this.configFrame = {
             center: {
@@ -49,7 +55,7 @@ class AnimateClockCanvas {
             width : 1200,
             height: 300,
         }
-        this.theme = theme || 'white'
+
         this.configClock = {
             panelRadius: 600,              // 表盘大小
             widthSecondPointer: 3,         // 秒针 宽度
@@ -144,8 +150,8 @@ class AnimateClockCanvas {
         this.drawClockPanelHour(contextClock, this.configFrame.center)
         // this.drawRefLines(contextClock, this.configFrame.center)
         // this.drawCenter(contextClock, this.configFrame.center)
-        this.drawPointerMinute(contextClock, this.configFrame.center)
         this.drawPointerHour(contextClock, this.configFrame.center)
+        this.drawPointerMinute(contextClock, this.configFrame.center)
         this.drawPointerSecond(contextClock, this.configFrame.center)
 
 
@@ -234,7 +240,7 @@ class AnimateClockCanvas {
     }
 
     drawCenter(ctx, center){
-        const centerRadius = 15
+        const centerRadius = 3
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.arc(0, 0, centerRadius, 0, Math.PI * 2)
@@ -272,8 +278,33 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = THEME[this.theme].pointerHour
-        ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
+        ctx.fillStyle = THEME[this.theme].pointerHourMinute
+        ctx.strokeStyle = THEME[this.theme].pointerHourMinuteStroke
+
+        ctx.beginPath()
+
+        if (this.pointerType === 'pointer'){
+            // 画尖指针时
+            const radius = lineWidth/2
+            const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
+            const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
+            const pointC = [radius, this.configClock.pointerCenterOffset + radius]
+            const pointD = [0, this.configClock.pointerCenterOffset]
+            ctx.moveTo(...pointA)
+            ctx.lineTo(...pointB)
+            ctx.lineTo(...pointC)
+            ctx.lineTo(...pointD)
+            ctx.lineTo(...pointA)
+        } else {
+            // 圆形指针时
+            const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset,]
+            const pointRightBottom = [lineWidth, lineHeight, ]
+            ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+        }
+
+        ctx.closePath()
+        ctx.fill()
+        ctx.stroke()
         ctx.restore()
     }
 
@@ -289,8 +320,33 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = THEME[this.theme].pointerHour
-        ctx.fillRect(-lineWidth/2, this.configClock.pointerCenterOffset, lineWidth, lineHeight)
+        ctx.fillStyle = THEME[this.theme].pointerHourMinute
+        ctx.strokeStyle = THEME[this.theme].pointerHourMinuteStroke
+        ctx.strokeWidth = 1
+        ctx.beginPath()
+
+        if (this.pointerType === 'pointer'){
+            // 尖指针时
+            const radius = lineWidth/2
+            const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
+            const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
+            const pointC = [radius, this.configClock.pointerCenterOffset + radius]
+            const pointD = [0, this.configClock.pointerCenterOffset]
+            ctx.moveTo(...pointA)
+            ctx.lineTo(...pointB)
+            ctx.lineTo(...pointC)
+            ctx.lineTo(...pointD)
+            ctx.lineTo(...pointA)
+        } else {
+            // 圆形指针
+            const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset]
+            const pointRightBottom = [lineWidth, lineHeight, ]
+            ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+        }
+
+        ctx.closePath()
+        ctx.fill()
+        ctx.stroke()
         ctx.restore()
     }
 
