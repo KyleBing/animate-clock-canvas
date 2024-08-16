@@ -297,23 +297,30 @@ class AnimateClockCanvas {
 
         ctx.beginPath()
 
-        if (this.pointerType === 'pointer'){
-            // 画尖指针时
-            const radius = lineWidth/2
-            const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
-            const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
-            const pointC = [radius, this.configClock.pointerCenterOffset + radius]
-            const pointD = [0, this.configClock.pointerCenterOffset]
-            ctx.moveTo(...pointA)
-            ctx.lineTo(...pointB)
-            ctx.lineTo(...pointC)
-            ctx.lineTo(...pointD)
-            ctx.lineTo(...pointA)
-        } else {
-            // 圆形指针时
-            const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset,]
-            const pointRightBottom = [lineWidth, lineHeight, ]
-            ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+        const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset,]
+        const pointRightBottom = [lineWidth, lineHeight]
+        switch (this.pointerType){
+            case 'pointer':
+                // 尖指针时
+                const radius = lineWidth/2
+                const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
+                const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
+                const pointC = [radius, this.configClock.pointerCenterOffset + radius]
+                const pointD = [0, this.configClock.pointerCenterOffset]
+                ctx.moveTo(...pointA)
+                ctx.lineTo(...pointB)
+                ctx.lineTo(...pointC)
+                ctx.lineTo(...pointD)
+                ctx.lineTo(...pointA)
+                break
+            case 'rect':
+                ctx.fillRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                break
+            case 'rounded':
+            default:
+                // 圆形指针时
+                ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                break
         }
 
         ctx.closePath()
@@ -339,25 +346,30 @@ class AnimateClockCanvas {
         ctx.strokeWidth = 1
         ctx.beginPath()
 
-        if (this.pointerType === 'pointer'){
-            // 尖指针时
-            const radius = lineWidth/2
-            const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
-            const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
-            const pointC = [radius, this.configClock.pointerCenterOffset + radius]
-            const pointD = [0, this.configClock.pointerCenterOffset]
-            ctx.moveTo(...pointA)
-            ctx.lineTo(...pointB)
-            ctx.lineTo(...pointC)
-            ctx.lineTo(...pointD)
-            ctx.lineTo(...pointA)
-        } else {
-            // 圆形指针
-            const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset]
-            const pointRightBottom = [lineWidth, lineHeight, ]
-            ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+        const pointLeftTop = [-lineWidth/2, this.configClock.pointerCenterOffset]
+        const pointRightBottom = [lineWidth, lineHeight]
+        switch (this.pointerType){
+            case 'pointer':
+                // 尖指针时
+                const radius = lineWidth/2
+                const pointA = [-radius, this.configClock.pointerCenterOffset + radius]
+                const pointB = [0, lineHeight +  radius  + this.configClock.pointerCenterOffset]
+                const pointC = [radius, this.configClock.pointerCenterOffset + radius]
+                const pointD = [0, this.configClock.pointerCenterOffset]
+                ctx.moveTo(...pointA)
+                ctx.lineTo(...pointB)
+                ctx.lineTo(...pointC)
+                ctx.lineTo(...pointD)
+                ctx.lineTo(...pointA)
+                break
+            case 'rect':
+                ctx.fillRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                break
+            case 'rounded':
+            default:
+                // 圆形指针时
+                ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
         }
-
         ctx.closePath()
         ctx.fill()
         ctx.stroke()
