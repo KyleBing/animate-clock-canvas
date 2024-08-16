@@ -188,7 +188,7 @@ class AnimateClockCanvas {
             `Timeline: ${this.configClock.timeLine}`
         ]
         infos.forEach((item , index) => {
-            ctx.fillText(item, 30 ,this.configFrame.height - ( 20 + fontSize * index ) )
+            ctx.fillText(item, 30 ,this.configFrame.height - ( 20 + fontSize * index ) - 20 )
         })
     }
 
