@@ -9,10 +9,11 @@
 
 浏览器可设置参数：
 
-| 参数    | 说明   | 默认值       | 可能的值                          |
-|-------|------|-----------|-------------------------------|
-| theme | 主题   | `white`   | `white` 白色 `black` 黑色         |
-| type  | 指针类型 | `pointer` | `pointer` 尖形指针 `rounded` 圆形指针 |
+| 参数     | 说明   | 默认值       | 可能的值                          |
+|--------|------|-----------|-------------------------------|
+| theme  | 主题   | `white`   | `white` 白色 `black` 黑色         |
+| type   | 指针类型 | `pointer` | `pointer` 尖形指针 `rounded` 圆形指针 |
+| number | 刻度标识 | `ALB`     | `ALB` 阿拉伯数字 `LM` 罗马数字         |
 
 例子：
 - 白色 [http://kylebing.cn/tools/clock-a?theme=white](http://kylebing.cn/tools/clock-a?theme=white)

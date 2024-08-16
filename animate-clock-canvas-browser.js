@@ -39,12 +39,14 @@ class AnimateClockCanvas {
     /**
      * @param theme white | black   主题
      * @param pointerType rounded | pointer   指针类型
+     * @param numberType  ALB | LM  数字类型
      */
-    constructor( theme, pointerType ) {
+    constructor( theme, pointerType, numberType ) {
         this.isPlayConstantly = true // 是否一直 draw
         this.isShowDetailInfo = true // 是否显示所有参数值
 
         this.theme = theme || 'white'
+        this.numberType = numberType.toUpperCase() || 'ALB'
         this.pointerType = pointerType || 'rounded'
 
         this.configFrame = {
@@ -63,8 +65,11 @@ class AnimateClockCanvas {
             widthHourPointer: 30,          // 时针 宽度
             pointerCenterOffset: 20,       // 指针 偏离中心距离
 
-            fontSizeHour: 50,              // 刻度大小
-            fontSizeMinute: 50,            // 刻度大小
+            labelFontSizeHour: 60,              // 刻度字体大小：小时
+            labelFontSizeMinute: 25,            // 刻度字体大小：分钟
+
+            labelOffsetHour: 30,           // 刻度字体偏移量：小时
+            labelOffsetMinute: 20,        // 刻度字体偏移量：分钟
 
             lengthSplitHour: 80,           // 刻度长度: 时
             lengthSplitMinute: 30,         // 刻度长度: 分
@@ -203,8 +208,8 @@ class AnimateClockCanvas {
             ctx.rotate(Math.PI / 6)
             ctx.fillRect(-this.configClock.lineWidthHour / 2, -offsetCenter, this.configClock.lineWidthHour, lineHeight)
             ctx.textAlign = 'center'
-            ctx.font = `${this.configClock.fontSizeHour}px Galvji`
-            ctx.fillText(CLOCK_ARRAY['ALB'][i], 0, -offsetCenter - 30,)
+            ctx.font = `${this.configClock.labelFontSizeHour}px Galvji`
+            ctx.fillText(CLOCK_ARRAY[this.numberType][i], 0, -offsetCenter - this.configClock.labelOffsetHour,)
         }
         ctx.restore()
     }
@@ -220,8 +225,10 @@ class AnimateClockCanvas {
             ctx.rotate(Math.PI / 30)
             ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
             ctx.textAlign = 'center'
-            ctx.font = '20px Galvji'
-            ctx.fillText(i + 1, 0, -offsetCenter - 100,)
+            ctx.font = `${this.configClock.labelFontSizeMinute}px Galvji`
+            if ((i+1)%5!==0){
+                ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
+            }
         }
         ctx.restore()
     }
