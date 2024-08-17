@@ -22,7 +22,7 @@
 - 黑色 [http://kylebing.cn/tools/clock-a?theme=black](http://kylebing.cn/tools/clock-a?theme=black)
 - 白色指针尖 [http://kylebing.cn/tools/clock-a?theme=white&type=pointer](http://kylebing.cn/tools/clock-a?theme=white&type=pointer)
 - 白色指针尖罗马数字 [http://kylebing.cn/tools/clock-a?theme=white&type=pointer&number=lm](http://kylebing.cn/tools/clock-a?theme=white&type=pointer&number=lm)
-- 白色放大实时秒数 [http://kylebing.cn/tools/clock-a?bigsecond=1](http://kylebing.cn/tools/clock-a?bigsecond=1)
+- 白色放大实时秒数 [http://kylebing.cn/tools/clock-a?zoomsecond=1](http://kylebing.cn/tools/clock-a?zoomsecond=1)
 
 
 
