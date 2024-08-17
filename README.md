@@ -7,6 +7,10 @@
 显示模拟时钟的 canvas 网页小应用。
 
 
+<img width="1920" alt="Screenshot 2024-08-17 at 10 46 17" src="https://github.com/user-attachments/assets/d15adaec-25c0-4736-a3dc-7156899bf0a9">
+<img width="1920" alt="Screenshot 2024-08-17 at 10 52 28" src="https://github.com/user-attachments/assets/4356f817-f816-4706-a445-42d5d94e0784">
+
+
 浏览器可设置参数：
 
 | 参数         | 说明         | 默认值       | 可能的值                                    |
@@ -27,3 +31,8 @@
 
 
 > CSDN 教程: [https://blog.csdn.net/KimBing/article/details/141223741](https://blog.csdn.net/KimBing/article/details/141223741)
+
+
+# GIF
+
+![2024-08-17 10-48-10 2024-08-17 10_49_09](https://github.com/user-attachments/assets/3ddfe869-fc9e-4bf9-9a28-443db19b6735)
