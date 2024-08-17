@@ -18,7 +18,13 @@
     <script>
         let queryData = getSearchData()
         console.log(queryData)
-        let animateClockCanvas = new AnimateClockCanvas(queryData.theme, queryData.type, queryData.number, queryData.skiphour)
+        let animateClockCanvas = new AnimateClockCanvas(
+            queryData.theme,
+            queryData.type,
+            queryData.number,
+            queryData.skiphour,
+            queryData.zoomsecond
+        )
 
         /****************************
          *

@@ -40,9 +40,10 @@ class AnimateClockCanvas {
      * @param theme white | black   主题
      * @param pointerType rounded | pointer   指针类型
      * @param numberType  ALB | LM  数字类型
-     * @param isSkipHourLabel 分钟数是否跳过小时数显示
+     * @param isSkipHourLabel  0 | 1  分钟数是否跳过小时数显示
+     * @param isZoomSecond 0 | 1  是否放大实时秒数
      */
-    constructor( theme, pointerType, numberType, isSkipHourLabel ) {
+    constructor( theme, pointerType, numberType, isSkipHourLabel, isZoomSecond ) {
         this.isPlayConstantly = true // 是否一直 draw
         this.isShowDetailInfo = true // 是否显示所有参数值
 
@@ -50,6 +51,8 @@ class AnimateClockCanvas {
         this.numberType = (numberType || 'ALB').toUpperCase()
         this.pointerType = pointerType || 'rounded'
         this.isSkipHourLabel = isSkipHourLabel === '1'
+        this.isZoomSecond = isZoomSecond === '1' // 是否放大实时秒数
+
 
         this.configFrame = {
             center: {
@@ -235,15 +238,17 @@ class AnimateClockCanvas {
         ctx.fillStyle = THEME[this.theme].colorSecond
         for (let i = 0; i < 60; i++) {
 
-            // 放大实时秒数
-            const distance1 = Math.abs((seconds + ms / 1000) - (i + 1))  // 距离当前秒数的距离
-            const distance2 = seconds + ms / 1000
-            const distance = Math.min(distance1, distance2)
             let fontSize = this.configClock.labelFontSizeMinute
-            if (distance < 1.5){
-                fontSize = (2.5 - distance) * fontSize
-            } else {
+            if (this.isZoomSecond){
+                // 放大实时秒数
+                const distance1 = Math.abs((seconds + ms / 1000) - (i + 1))  // 距离当前秒数的距离
+                const distance2 = seconds + ms / 1000
+                const distance = Math.min(distance1, distance2)
+                if (distance < 1.5){
+                    fontSize = (2.5 - distance) * fontSize
+                } else {
 
+                }
             }
 
             ctx.rotate(Math.PI / 30)
