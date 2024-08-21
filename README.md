@@ -20,6 +20,7 @@
 | zoomsecond | 放大显示秒数     | `0`       | `0` 否 `1` 是                             |
 | showinfo   | 显示参数值      | `1`       | `0` 否 `1` 是                             |
 | showdate   | 显示日期、星期    | `1`       | `0` 否 `1` 是                             |
+| showshadow | 显示指针阴影     | `1`       | `0` 否 `1` 是                             |
 
 例子：
 - 白色 [http://kylebing.cn/tools/clock-a?theme=white](http://kylebing.cn/tools/clock-a?theme=white)
@@ -35,4 +36,4 @@
 
 # GIF
 
-![2024-08-17 10-48-10 2024-08-17 10_49_09](https://github.com/user-attachments/assets/3ddfe869-fc9e-4bf9-9a28-443db19b6735)
+![3 7m](https://github.com/user-attachments/assets/f0c9b665-c728-4906-860a-73249adb983d)

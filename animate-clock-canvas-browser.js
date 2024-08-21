@@ -53,8 +53,14 @@ class AnimateClockCanvas {
      * @param isSkipHourLabel   0 | 1              分钟数是否跳过小时数显示
      * @param isZoomSecond      0 | 1              是否放大实时秒数
      * @param isShowDetailInfo  0 | 1              是否显示所有参数值
+     * @param isShowWeekDate    0 | 1              是否显示日期、星期
+     * @param isShowShadow      0 | 1              是否显示指针阴影
      */
-    constructor( theme, pointerType, numberType, isSkipHourLabel, isZoomSecond, isShowDetailInfo = '1', isShowWeekDate = '1' ) {
+    constructor(
+        theme, pointerType, numberType, isSkipHourLabel,
+        isZoomSecond, isShowDetailInfo = '1', isShowWeekDate = '1' ,
+        isShowShadow = '1'
+    ) {
         this.isPlayConstantly = true // 是否一直 draw
 
         this.theme = theme || 'white'
@@ -63,7 +69,8 @@ class AnimateClockCanvas {
         this.isSkipHourLabel = isSkipHourLabel === '1'          // 分钟数是否跳过小时数显示
         this.isZoomSecond = isZoomSecond === '1'                // 是否放大实时秒数
         this.isShowDetailInfo = isShowDetailInfo === '1'        // 是否显示所有参数值
-        this.isShowWeekDate = isShowWeekDate === '1'            // 是否显示所有参数值
+        this.isShowWeekDate = isShowWeekDate === '1'            // 是否显示日期、星期
+        this.isShowShadow = isShowShadow === '1'                // 是否显示指针阴影
 
 
         this.configFrame = {
@@ -349,10 +356,12 @@ class AnimateClockCanvas {
         ctx.save()
 
         // 时针阴影
-        ctx.shadowColor = 'rgba(0,0,0,0.3)'
-        ctx.shadowBlur = 2
-        ctx.shadowOffsetX = 1
-        ctx.shadowOffsetY = 2
+        if (this.isShowShadow){
+            ctx.shadowColor = 'rgba(0,0,0,0.3)'
+            ctx.shadowBlur = 2
+            ctx.shadowOffsetX = 1
+            ctx.shadowOffsetY = 2
+        }
 
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
@@ -410,10 +419,12 @@ class AnimateClockCanvas {
         ctx.save()
 
         // 分针阴影
-        ctx.shadowColor = 'rgba(0,0,0,0.3)'
-        ctx.shadowBlur = 5
-        ctx.shadowOffsetX = 2
-        ctx.shadowOffsetY = 3
+        if (this.isShowShadow){
+            ctx.shadowColor = 'rgba(0,0,0,0.3)'
+            ctx.shadowBlur = 5
+            ctx.shadowOffsetX = 2
+            ctx.shadowOffsetY = 3
+        }
 
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
@@ -476,10 +487,12 @@ class AnimateClockCanvas {
         ctx.save()
 
         // 秒针阴影
-        ctx.shadowColor = 'rgba(0,0,0,0.2)'
-        ctx.shadowBlur = 5
-        ctx.shadowOffsetX = 3
-        ctx.shadowOffsetY = 5
+        if (this.isShowShadow){
+            ctx.shadowColor = 'rgba(0,0,0,0.2)'
+            ctx.shadowBlur = 5
+            ctx.shadowOffsetX = 3
+            ctx.shadowOffsetY = 5
+        }
 
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
