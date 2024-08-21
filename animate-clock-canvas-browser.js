@@ -14,22 +14,32 @@ const CLOCK_ARRAY = {
     ALB: ['1','2','3','4','5','6','7','8','9','10','11','12']
 }
 
+const WEEK_MAP = {
+    '1': '周一',
+    '2': '周二',
+    '3': '周三',
+    '4': '周四',
+    '5': '周五',
+    '6': '周六',
+    '0': '周日',
+}
+
 const THEME = {
     white: {
         bg: 'white',
-        pointerSecond: '#ff0000',
+        colorPointerSecond: '#ff0000',
         colorPointerHour: '#000000',
         colorPointerMinute: '#000000',
-        colorPointerSecond: '#787878',
+        colorScaleSecond: '#787878',
         colorMain: 'black',
         referenceLine: 'magenta'   // 参考线
     },
     black: {
         bg: 'black',
-        pointerSecond: '#ff0000',
+        colorPointerSecond: '#ff0000',
         colorPointerHour: '#ffffff',
         colorPointerMinute: '#ffffff',
-        colorPointerSecond: '#9e9e9e',
+        colorScaleSecond: '#9e9e9e',
         colorMain: '#d8d8d8',
         referenceLine: 'magenta'   // 参考线
     }
@@ -64,6 +74,8 @@ class AnimateClockCanvas {
         }
 
         this.configClock = {
+            dateFontSize: 40,               // 日期、星期字体大小
+
             panelRadius: 600,              // 表盘大小
             widthSecondPointer: 3,         // 秒针 宽度
             widthMinutePointer: 20,        // 分针 宽度
@@ -157,13 +169,23 @@ class AnimateClockCanvas {
         }
 
 
+        // 表盘
         this.drawClockPanelSeconds(contextClock, this.configFrame.center)
         this.drawClockPanelMinutes(contextClock, this.configFrame.center)
         this.drawClockPanelHour(contextClock, this.configFrame.center)
-        // this.drawRefLines(contextClock, this.configFrame.center)
+
+        // 参考线
+        this.drawRefLines(contextClock, this.configFrame.center)
+
+        // 日期、星期
+        this.drawWeekAndDate(contextClock, this.configFrame.center)
+
+        // 指针
         this.drawPointerHour(contextClock, this.configFrame.center)
         this.drawPointerMinute(contextClock, this.configFrame.center)
         this.drawPointerSecond(contextClock, this.configFrame.center)
+
+        // 中心点
         this.drawCenter(contextClock, this.configFrame.center)
 
 
@@ -195,6 +217,24 @@ class AnimateClockCanvas {
         infos.forEach((item , index) => {
             ctx.fillText(item, 30 ,this.configFrame.height - ( 20 + fontSize * index ) - 20 )
         })
+    }
+
+    // 展示日期、星期
+    drawWeekAndDate(ctx, center){
+        ctx.save()
+        const fontSize = this.configClock.dateFontSize
+        ctx.font = `${fontSize}px Galvji`
+        ctx.textBaseline = 'middle'  // 文字纵向居中 绘制
+        const weekString = WEEK_MAP[new Date().getDay()]
+        const dateString = String(new Date().getDate())
+        // 星期
+        ctx.fillStyle = THEME[this.theme].colorPointerSecond
+        ctx.fillText(weekString, center.x + this.configClock.panelRadius / 2 ,center.y)
+        // 日期
+        ctx.fillStyle = THEME[this.theme].colorMain
+        ctx.fillText(dateString, center.x + this.configClock.panelRadius / 2 - (fontSize + 15) ,center.y)
+        ctx.restore()
+
     }
 
     drawRefLines(ctx, center){
@@ -237,7 +277,7 @@ class AnimateClockCanvas {
 
         ctx.save()
         ctx.translate(center.x, center.y)
-        ctx.fillStyle = THEME[this.theme].colorPointerSecond
+        ctx.fillStyle = THEME[this.theme].colorScaleSecond
         for (let i = 0; i < 60; i++) {
 
             let fontSize = this.configClock.labelFontSizeMinute
@@ -275,7 +315,7 @@ class AnimateClockCanvas {
         const offsetCenter = this.configClock.panelRadius
         ctx.save()
         ctx.translate(center.x, center.y)
-        ctx.fillStyle = THEME[this.theme].colorPointerSecond
+        ctx.fillStyle = THEME[this.theme].colorScaleSecond
         for (let i = 0; i < 300; i++) {
             ctx.rotate(Math.PI * 2 / 300)
             ctx.fillRect(-this.configClock.lineWidthSecond / 2, -offsetCenter, this.configClock.lineWidthSecond, lineHeight)
@@ -423,7 +463,7 @@ class AnimateClockCanvas {
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
-        ctx.fillStyle = THEME[this.theme].pointerSecond
+        ctx.fillStyle = THEME[this.theme].colorPointerSecond
         ctx.fillRect(-lineWidth/2, -this.configClock.pointerCenterOffset*2, lineWidth, lineHeight)
 
         // 圆心
@@ -437,7 +477,5 @@ class AnimateClockCanvas {
 
         ctx.restore()
     }
-
-
 }
 
