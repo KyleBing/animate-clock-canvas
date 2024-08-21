@@ -215,7 +215,7 @@ class AnimateClockCanvas {
     // 打印输出所有参数值
     showAllInfo(ctx){
         ctx.fillStyle = 'gray'
-        const fontSize = 30
+        const fontSize = 26
         ctx.font = `${fontSize - 3}px Galvji`
 
         const infos = [
