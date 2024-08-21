@@ -6,9 +6,7 @@
 
 显示模拟时钟的 canvas 网页小应用。
 
-
-<img width="1920" alt="Screenshot 2024-08-17 at 10 46 17" src="https://github.com/user-attachments/assets/d15adaec-25c0-4736-a3dc-7156899bf0a9">
-<img width="1920" alt="Screenshot 2024-08-17 at 10 52 28" src="https://github.com/user-attachments/assets/4356f817-f816-4706-a445-42d5d94e0784">
+![image](https://github.com/user-attachments/assets/30517f2d-9410-4a49-b47d-3ca5090107ed)
 
 
 浏览器可设置参数：
