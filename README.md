@@ -20,6 +20,8 @@
 | number     | 刻度标识       | `ALB`     | `ALB` 阿拉伯数字 `LM` 罗马数字  (大小写均可)          |
 | skiphour   | 跳过小时数显示分钟数 | `0`       | `0` 不作处理 `1` 跳过                         |
 | zoomsecond | 放大显示秒数     | `0`       | `0` 否 `1` 是                             |
+| showinfo   | 显示参数值      | `1`       | `0` 否 `1` 是                             |
+| showdate   | 显示日期、星期    | `1`       | `0` 否 `1` 是                             |
 
 例子：
 - 白色 [http://kylebing.cn/tools/clock-a?theme=white](http://kylebing.cn/tools/clock-a?theme=white)

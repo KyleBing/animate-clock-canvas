@@ -47,21 +47,23 @@ const THEME = {
 
 class AnimateClockCanvas {
     /**
-     * @param theme white | black   主题
-     * @param pointerType rounded | pointer   指针类型
-     * @param numberType  ALB | LM  数字类型
-     * @param isSkipHourLabel  0 | 1  分钟数是否跳过小时数显示
-     * @param isZoomSecond 0 | 1  是否放大实时秒数
+     * @param theme             white | black      主题
+     * @param pointerType       rounded | pointer  指针类型
+     * @param numberType        ALB | LM           数字类型
+     * @param isSkipHourLabel   0 | 1              分钟数是否跳过小时数显示
+     * @param isZoomSecond      0 | 1              是否放大实时秒数
+     * @param isShowDetailInfo  0 | 1              是否显示所有参数值
      */
-    constructor( theme, pointerType, numberType, isSkipHourLabel, isZoomSecond ) {
+    constructor( theme, pointerType, numberType, isSkipHourLabel, isZoomSecond, isShowDetailInfo = '1', isShowWeekDate = '1' ) {
         this.isPlayConstantly = true // 是否一直 draw
-        this.isShowDetailInfo = true // 是否显示所有参数值
 
         this.theme = theme || 'white'
         this.numberType = (numberType || 'ALB').toUpperCase()
-        this.pointerType = pointerType || 'rounded'
-        this.isSkipHourLabel = isSkipHourLabel === '1'
-        this.isZoomSecond = isZoomSecond === '1' // 是否放大实时秒数
+        this.pointerType = pointerType || 'rounded'             // 指针类型
+        this.isSkipHourLabel = isSkipHourLabel === '1'          // 分钟数是否跳过小时数显示
+        this.isZoomSecond = isZoomSecond === '1'                // 是否放大实时秒数
+        this.isShowDetailInfo = isShowDetailInfo === '1'        // 是否显示所有参数值
+        this.isShowWeekDate = isShowWeekDate === '1'            // 是否显示所有参数值
 
 
         this.configFrame = {
@@ -175,10 +177,12 @@ class AnimateClockCanvas {
         this.drawClockPanelHour(contextClock, this.configFrame.center)
 
         // 参考线
-        this.drawRefLines(contextClock, this.configFrame.center)
+        // this.drawRefLines(contextClock, this.configFrame.center)
 
         // 日期、星期
-        this.drawWeekAndDate(contextClock, this.configFrame.center)
+        if (this.isShowWeekDate){
+            this.drawWeekAndDate(contextClock, this.configFrame.center)
+        }
 
         // 指针
         this.drawPointerHour(contextClock, this.configFrame.center)
@@ -234,7 +238,6 @@ class AnimateClockCanvas {
         ctx.fillStyle = THEME[this.theme].colorMain
         ctx.fillText(dateString, center.x + this.configClock.panelRadius / 2 - (fontSize + 15) ,center.y)
         ctx.restore()
-
     }
 
     drawRefLines(ctx, center){
@@ -251,7 +254,7 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
-    // 画时钟表盘: 时
+    // 表盘刻度: 时
     drawClockPanelHour(ctx, center){
         const lineHeight = this.configClock.lengthSplitHour
         const offsetCenter = this.configClock.panelRadius
@@ -268,7 +271,7 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
-    // 画时钟表盘：分钟
+    // 表盘刻度：分钟
     drawClockPanelMinutes(ctx, center){
         const lineHeight = this.configClock.lengthSplitMinute
         const offsetCenter = this.configClock.panelRadius
@@ -309,7 +312,7 @@ class AnimateClockCanvas {
         }
         ctx.restore()
     }
-    // 画时钟表盘：秒
+    // 表盘刻度：秒
     drawClockPanelSeconds(ctx, center){
         const lineHeight = this.configClock.lengthSplitSecond
         const offsetCenter = this.configClock.panelRadius
@@ -334,7 +337,7 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
-    // 时针动作
+    // 时针
     drawPointerHour(ctx, center){
         const seconds = new Date().getSeconds()
         const minutes = new Date().getMinutes()
@@ -344,6 +347,13 @@ class AnimateClockCanvas {
         const lineWidth = this.configClock.widthHourPointer
         const lineHeight = this.configClock.panelRadius * (3/6)
         ctx.save()
+
+        // 时针阴影
+        ctx.shadowColor = 'rgba(0,0,0,0.3)'
+        ctx.shadowBlur = 2
+        ctx.shadowOffsetX = 1
+        ctx.shadowOffsetY = 2
+
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
         ctx.fillStyle = THEME[this.theme].colorPointerHour
@@ -388,7 +398,7 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
-    // 分针动作
+    // 分针
     drawPointerMinute(ctx, center){
         const ms = new Date().getMilliseconds()
         const seconds = new Date().getSeconds()
@@ -401,9 +411,9 @@ class AnimateClockCanvas {
 
         // 分针阴影
         ctx.shadowColor = 'rgba(0,0,0,0.3)'
-        ctx.shadowBlur = 4
-        ctx.shadowOffsetX = 1
-        ctx.shadowOffsetY = 2
+        ctx.shadowBlur = 5
+        ctx.shadowOffsetX = 2
+        ctx.shadowOffsetY = 3
 
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
@@ -455,7 +465,7 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 
-    // 秒针动作
+    // 秒针
     drawPointerSecond(ctx, center){
         const ms = new Date().getMilliseconds()
         const seconds = new Date().getSeconds()
@@ -466,10 +476,10 @@ class AnimateClockCanvas {
         ctx.save()
 
         // 秒针阴影
-        ctx.shadowColor = 'rgba(0,0,0,0.3)'
-        ctx.shadowBlur = 4
-        ctx.shadowOffsetX = 1
-        ctx.shadowOffsetY = 2
+        ctx.shadowColor = 'rgba(0,0,0,0.2)'
+        ctx.shadowBlur = 5
+        ctx.shadowOffsetX = 3
+        ctx.shadowOffsetY = 5
 
         ctx.translate(center.x, center.y)
         ctx.rotate(rotateAngle)
