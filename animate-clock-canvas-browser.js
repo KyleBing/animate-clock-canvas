@@ -118,7 +118,7 @@ class AnimateClockCanvas {
         this.pointerType = pointerType || 'rounded'             // 指针类型
         this.isSkipHourLabel = isSkipHourLabel === '1'          // 分钟数是否跳过小时数显示
         this.isZoomSecond = isZoomSecond === '1'                // 是否放大实时秒数
-        this.isShowDetailInfo = isShowDetailInfo === '1'        // 是否显示所有参数值
+        this.isShowDetailInfo = isShowDetailInfo === '0'        // 是否显示所有参数值
         this.isShowWeekDate = isShowWeekDate === '1'            // 是否显示日期、星期
         this.isShowShadow = isShowShadow === '1'                // 是否显示指针阴影
         this.preset = preset || '0'                // 是否显示指针阴影
