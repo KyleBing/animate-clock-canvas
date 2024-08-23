@@ -24,6 +24,55 @@ const WEEK_MAP = {
     '0': '周日',
 }
 
+const PRESETS = [
+    {
+        dateFontSize: 40,              // 日期、星期字体大小
+        labelFontSizeHour: 80,         // 刻度字体大小：小时
+        labelFontSizeMinute: 20,       // 刻度字体大小：分钟
+        labelOffsetHour: 30,           // 刻度字体偏移量：小时
+        labelOffsetMinute: 125,        // 刻度字体偏移量：分钟
+
+        panelRadius: 600,              // 表盘大小
+        widthSecondPointer: 3,         // 秒针 宽度
+        widthMinutePointer: 20,        // 分针 宽度
+        widthHourPointer: 30,          // 时针 宽度
+        pointerCenterOffset: 40,       // 指针 偏离中心距离
+
+        radiusCenter: 4,               // 中心黑点的大小
+
+        lengthSplitHour: 80,           // 刻度长度: 时
+        lengthSplitMinute: 30,         // 刻度长度: 分
+        lengthSplitSecond: 20,         // 刻度长度: 秒
+
+        lineWidthHour: 10,             // 刻度宽：时
+        lineWidthMinute: 4,            // 刻度宽：分
+        lineWidthSecond: 1,            // 刻度宽：秒
+    },
+    {
+        dateFontSize: 40,              // 日期、星期字体大小
+        labelFontSizeHour: 80,         // 刻度字体大小：小时
+        labelFontSizeMinute: 20,       // 刻度字体大小：分钟
+        labelOffsetHour: -180,         // 刻度字体偏移量：小时
+        labelOffsetMinute: 30,         // 刻度字体偏移量：分钟
+
+        panelRadius: 600,              // 表盘大小
+        widthSecondPointer: 3,         // 秒针 宽度
+        widthMinutePointer: 20,        // 分针 宽度
+        widthHourPointer: 30,          // 时针 宽度
+        pointerCenterOffset: 40,       // 指针 偏离中心距离
+
+        radiusCenter: 4,               // 中心黑点的大小
+
+        lengthSplitHour: 80,           // 刻度长度: 时
+        lengthSplitMinute: 30,         // 刻度长度: 分
+        lengthSplitSecond: 20,         // 刻度长度: 秒
+
+        lineWidthHour: 10,             // 刻度宽：时
+        lineWidthMinute: 4,            // 刻度宽：分
+        lineWidthSecond: 1,            // 刻度宽：秒
+    },
+]
+
 const THEME = {
     white: {
         bg: 'white',
@@ -55,11 +104,12 @@ class AnimateClockCanvas {
      * @param isShowDetailInfo  0 | 1              是否显示所有参数值
      * @param isShowWeekDate    0 | 1              是否显示日期、星期
      * @param isShowShadow      0 | 1              是否显示指针阴影
+     * @param preset            0                  预制的几种表盘类型
      */
     constructor(
         theme, pointerType, numberType, isSkipHourLabel,
         isZoomSecond, isShowDetailInfo = '1', isShowWeekDate = '1' ,
-        isShowShadow = '1'
+        isShowShadow = '1', preset = '0'
     ) {
         this.isPlayConstantly = true // 是否一直 draw
 
@@ -71,7 +121,9 @@ class AnimateClockCanvas {
         this.isShowDetailInfo = isShowDetailInfo === '1'        // 是否显示所有参数值
         this.isShowWeekDate = isShowWeekDate === '1'            // 是否显示日期、星期
         this.isShowShadow = isShowShadow === '1'                // 是否显示指针阴影
+        this.preset = preset || '0'                // 是否显示指针阴影
 
+        this.panelRadius = 600 // 基尺寸
 
         this.configFrame = {
             center: {
@@ -82,35 +134,10 @@ class AnimateClockCanvas {
             height: 300,
         }
 
-        this.configClock = {
-            dateFontSize: 40,               // 日期、星期字体大小
+        this.configClock = PRESETS[Number(this.preset)]
 
-            panelRadius: 600,              // 表盘大小
-            widthSecondPointer: 3,         // 秒针 宽度
-            widthMinutePointer: 20,        // 分针 宽度
-            widthHourPointer: 30,          // 时针 宽度
-            pointerCenterOffset: 40,       // 指针 偏离中心距离
-
-            radiusCenter: 4, // 中心黑点的大小
-
-            labelFontSizeHour: 60,              // 刻度字体大小：小时
-            labelFontSizeMinute: 20,            // 刻度字体大小：分钟
-
-            labelOffsetHour: 30,           // 刻度字体偏移量：小时
-            labelOffsetMinute: 110,        // 刻度字体偏移量：分钟
-
-            lengthSplitHour: 80,           // 刻度长度: 时
-            lengthSplitMinute: 30,         // 刻度长度: 分
-            lengthSplitSecond: 20,         // 刻度长度: 秒
-
-            lineWidthHour: 10,             // 刻度宽：时
-            lineWidthMinute: 4,            // 刻度宽：分
-            lineWidthSecond: 1,            // 刻度宽：秒
-
-            timeLine: 0,                   // 时间轴
-
-            timeInit: new Date().getTime(),//  初始时间戳
-        }
+        // TIMELINE
+        this.timeLine = 0                   // 时间轴
 
         this.rotateAngleHour = 0
         this.rotateAngleMinute = 0
@@ -119,12 +146,8 @@ class AnimateClockCanvas {
         this.init()
 
         window.onresize = () => {
-            this.configFrame.height = innerHeight * 2
-            this.configFrame.width = innerWidth * 2
-            this.configFrame.center = {
-                x: this.configFrame.width/2,
-                y: this.configFrame.height/2
-            }
+            this.refreshSizes()
+
             let clockLayer = document.getElementById('clockLayer')
             this.updateFrameAttribute(clockLayer)
         }
@@ -143,24 +166,47 @@ class AnimateClockCanvas {
         clockLayer.style.left = '0'
     }
 
-    init(){
+    // 更新尺寸数据
+    refreshSizes(){
         this.configFrame.height = innerHeight * 2
         this.configFrame.width = innerWidth * 2
         this.configFrame.center = {
             x: this.configFrame.width/2,
             y: this.configFrame.height/2
         }
+        this.panelRadius = Math.min(this.configFrame.width, this.configFrame.height)/2 * (5/7)
+        this.updateAllSizeWithPanelRadiusSize(this.panelRadius)
+    }
+
+    // 根据屏幕尺寸，计算对应比例的
+    updateAllSizeWithPanelRadiusSize(finalRadiusSize){
+        this.configClock = JSON.parse(JSON.stringify(PRESETS[this.preset]))
+        const baseRadius = 600 // 表盘是基于这个尺寸进行缩放的
+        const ratio = finalRadiusSize / baseRadius
+        if (finalRadiusSize > 100){
+            for (let key in this.configClock){
+                if (key === 'panelRadius'){
+                    this.configClock.panelRadius = finalRadiusSize
+                } else {
+                    this.configClock[key] = PRESETS[this.preset][key] * ratio
+                }
+            }
+        }
+    }
+
+    init(){
+        this.refreshSizes()
 
         let clockLayer = document.createElement("canvas")
         this.updateFrameAttribute(clockLayer)
         document.documentElement.append(clockLayer)
-        this.configClock.timeLine =  0
+        this.timeLine =  0
         this.draw()
     }
 
     draw() {
         // 建立自己的时间参考线，消除使用系统时间时导致的切换程序后时间紊乱的情况
-        this.configClock.timeLine = this.configClock.timeLine + 1
+        this.timeLine = this.timeLine + 1
 
         // create clock
         let canvasClock = document.getElementById('clockLayer')
@@ -223,7 +269,7 @@ class AnimateClockCanvas {
             `Rotation Hour:  rad ${this.rotateAngleHour}`,
             `Rotation Minute:  rad ${this.rotateAngleMinute}`,
             `Rotation Second:  rad ${this.rotateAngleSecond}`,
-            `Timeline: ${this.configClock.timeLine}`
+            `Timeline: ${this.timeLine}`
         ]
         infos.forEach((item , index) => {
             ctx.fillText(item, 30 ,this.configFrame.height - ( 20 + fontSize * index ) - 20 )
@@ -402,7 +448,7 @@ class AnimateClockCanvas {
         // 圆心
         ctx.arc(0, 0, this.configClock.widthHourPointer/2, 0, Math.PI * 2)
         // 圆心与指针的连接
-        ctx.rect(-5, 0, 10, this.configClock.pointerCenterOffset + 10)
+        ctx.rect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
         ctx.fill()
         ctx.restore()
     }
@@ -469,7 +515,7 @@ class AnimateClockCanvas {
         // 圆心
         ctx.arc(0, 0, this.configClock.widthMinutePointer/2, 0, Math.PI * 2)
         // 圆心与指针的连接
-        ctx.rect(-5, 0, 10, this.configClock.pointerCenterOffset + 10)
+        ctx.rect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
         ctx.fill()
         ctx.closePath()
 

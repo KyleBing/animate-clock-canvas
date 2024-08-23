@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <!-- web app -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+    <meta name="mobile-web-app-capable" content="yes">
     <!-- fav icon -->
     <link rel="shortcut icon" href="./favicon.png" type="image/png">
 
@@ -13,7 +12,7 @@
     <link rel="apple-touch-icon" href="./favicon.png">
 
     <title>时钟</title>
-    <script src="animate-clock-canvas-browser.js?v=20240821223441"></script>
+    <script src="animate-clock-canvas-browser.js?v=20240823172050"></script>
 
     <script>
         let queryData = getSearchData()
@@ -27,6 +26,7 @@
             queryData.showinfo,
             queryData.showdate,
             queryData.showshadow,
+            queryData.set
         )
 
         /****************************
