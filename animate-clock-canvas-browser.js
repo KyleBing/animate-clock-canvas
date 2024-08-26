@@ -430,10 +430,13 @@ class AnimateClockCanvas {
                 ctx.lineTo(...pointC)
                 ctx.lineTo(...pointD)
                 ctx.lineTo(...pointA)
+                ctx.closePath()
+                ctx.fill()
                 break
             case 'rect':
                 ctx.beginPath()
                 ctx.fillRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                ctx.closePath()
                 ctx.fill()
                 break
             case 'rounded':
@@ -441,15 +444,18 @@ class AnimateClockCanvas {
                 // 圆形指针时
                 ctx.beginPath()
                 ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                ctx.closePath()
+                ctx.fill()
                 break
         }
-        ctx.closePath()
         // 画连接件
         // 圆心
+        ctx.beginPath()
         ctx.arc(0, 0, this.configClock.widthHourPointer/2, 0, Math.PI * 2)
-        // 圆心与指针的连接
-        ctx.rect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
+        ctx.closePath()
         ctx.fill()
+        // 圆心与指针的连接
+        ctx.fillRect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
         ctx.restore()
     }
 
@@ -508,17 +514,19 @@ class AnimateClockCanvas {
                 // 圆形指针时
                 ctx.beginPath()
                 ctx.roundRect(...pointLeftTop, ...pointRightBottom, [lineWidth,lineWidth,lineWidth,lineWidth])
+                ctx.closePath()
+                ctx.fill()
                 break
         }
 
         // 画连接件
         // 圆心
+        ctx.beginPath()
         ctx.arc(0, 0, this.configClock.widthMinutePointer/2, 0, Math.PI * 2)
-        // 圆心与指针的连接
-        ctx.rect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
-        ctx.fill()
         ctx.closePath()
-
+        ctx.fill()
+        // 圆心与指针的连接
+        ctx.fillRect(-this.configClock.widthMinutePointer*(1/4), 0, this.configClock.widthMinutePointer*(2/4), this.configClock.pointerCenterOffset + 10)
         ctx.restore()
     }
 
