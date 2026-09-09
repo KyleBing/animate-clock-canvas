@@ -4,8 +4,8 @@
  * @author: KyleBing(kylebing@163.com)
  * @github: https://github.com/KyleBing/animate-clock-canvas
  * @date-init: 2024-08-12
- * @date-update: 2024-08-12
- * @version: v0.0.1
+ * @date-update: 2026-03-26
+ * @version: v0.0.2
  * @platform: NPM
  */
 
@@ -124,6 +124,7 @@ class AnimateClockCanvas {
         this.preset = preset || '0'                // 是否显示指针阴影
 
         this.panelRadius = 600 // 基尺寸
+        this.dpr = Math.min(window.devicePixelRatio || 2, 2)
 
         this.configFrame = {
             center: {
@@ -143,22 +144,31 @@ class AnimateClockCanvas {
         this.rotateAngleMinute = 0
         this.rotateAngleSecond = 0
 
+        this.canvas = null
+        this.ctx = null
+        this.staticCanvas = null
+        this.staticCtx = null
+        this.staticCacheDirty = true
+        this.resizeTimer = null
+
         this.init()
 
-        window.onresize = () => {
-            this.refreshSizes()
-
-            let clockLayer = document.getElementById('clockLayer')
-            this.updateFrameAttribute(clockLayer)
-        }
+        window.addEventListener('resize', () => {
+            clearTimeout(this.resizeTimer)
+            this.resizeTimer = setTimeout(() => {
+                this.refreshSizes()
+                this.updateFrameAttribute(this.canvas)
+                this.staticCacheDirty = true
+            }, 100)
+        })
     }
 
     updateFrameAttribute(clockLayer){
         clockLayer.setAttribute('id', 'clockLayer')
         clockLayer.setAttribute('width', this.configFrame.width)
         clockLayer.setAttribute('height', this.configFrame.height)
-        clockLayer.style.width = `${this.configFrame.width / 2}px`
-        clockLayer.style.height = `${this.configFrame.height / 2}px`
+        clockLayer.style.width = `${this.configFrame.width / this.dpr}px`
+        clockLayer.style.height = `${this.configFrame.height / this.dpr}px`
         clockLayer.style.zIndex = '-3'
         clockLayer.style.userSelect = 'none'
         clockLayer.style.position = 'fixed'
@@ -168,14 +178,16 @@ class AnimateClockCanvas {
 
     // 更新尺寸数据
     refreshSizes(){
-        this.configFrame.height = innerHeight * 2
-        this.configFrame.width = innerWidth * 2
+        this.dpr = Math.min(window.devicePixelRatio || 2, 2)
+        this.configFrame.height = Math.round(innerHeight * this.dpr)
+        this.configFrame.width = Math.round(innerWidth * this.dpr)
         this.configFrame.center = {
             x: this.configFrame.width/2,
             y: this.configFrame.height/2
         }
         this.panelRadius = Math.min(this.configFrame.width, this.configFrame.height)/2 * (5/7)
         this.updateAllSizeWithPanelRadiusSize(this.panelRadius)
+        this.staticCacheDirty = true
     }
 
     // 根据屏幕尺寸，计算对应比例的
@@ -197,58 +209,74 @@ class AnimateClockCanvas {
     init(){
         this.refreshSizes()
 
-        let clockLayer = document.createElement("canvas")
-        this.updateFrameAttribute(clockLayer)
-        document.documentElement.append(clockLayer)
+        this.canvas = document.createElement('canvas')
+        this.ctx = this.canvas.getContext('2d', { alpha: false })
+        this.updateFrameAttribute(this.canvas)
+        document.documentElement.append(this.canvas)
+
+        this.staticCanvas = document.createElement('canvas')
+        this.staticCtx = this.staticCanvas.getContext('2d', { alpha: false })
+        this.staticCacheDirty = true
+
         this.timeLine =  0
         this.draw()
     }
 
-    draw() {
-        // 建立自己的时间参考线，消除使用系统时间时导致的切换程序后时间紊乱的情况
-        this.timeLine = this.timeLine + 1
+    rebuildStaticLayer(){
+        const { width, height, center } = this.configFrame
+        this.staticCanvas.width = width
+        this.staticCanvas.height = height
 
-        // create clock
-        let canvasClock = document.getElementById('clockLayer')
-        let contextClock = canvasClock.getContext('2d')
-        contextClock.clearRect(0, 0, this.configFrame.width, this.configFrame.height)
-
-        // 背景，没有 bgColor 的时候，背景就是透明的
-        if (this.configFrame.bgColor){
-
-        }
+        const ctx = this.staticCtx
+        ctx.clearRect(0, 0, width, height)
 
         if (this.theme) {
-            contextClock.fillStyle = THEME[this.theme].bg
-            contextClock.fillRect(0, 0, this.configFrame.width, this.configFrame.height)
+            ctx.fillStyle = THEME[this.theme].bg
+            ctx.fillRect(0, 0, width, height)
         }
 
+        this.drawClockPanelSeconds(ctx, center)
+        this.drawClockPanelMinuteTicks(ctx, center)
 
-        // 表盘
-        this.drawClockPanelSeconds(contextClock, this.configFrame.center)
-        this.drawClockPanelMinutes(contextClock, this.configFrame.center)
-        this.drawClockPanelHour(contextClock, this.configFrame.center)
+        // 放大秒数时，分钟数字每帧变化，不放入静态层
+        if (!this.isZoomSecond) {
+            this.drawClockPanelMinuteLabels(ctx, center)
+        }
 
-        // 参考线
-        // this.drawRefLines(contextClock, this.configFrame.center)
+        this.drawClockPanelHour(ctx, center)
+        this.staticCacheDirty = false
+    }
 
-        // 日期、星期
+    draw() {
+        this.timeLine = this.timeLine + 1
+
+        const now = new Date()
+        const center = this.configFrame.center
+        const ctx = this.ctx
+
+        // 日期变化时，静态层里的日期不缓存；日期单独绘制，这里只保证表盘缓存有效
+        if (this.staticCacheDirty) {
+            this.rebuildStaticLayer()
+        }
+
+        // 整帧只合成一次静态表盘，避免每帧重绘几百根刻度
+        ctx.drawImage(this.staticCanvas, 0, 0)
+
+        if (this.isZoomSecond) {
+            this.drawClockPanelMinuteLabels(ctx, center, now)
+        }
+
         if (this.isShowWeekDate){
-            this.drawWeekAndDate(contextClock, this.configFrame.center)
+            this.drawWeekAndDate(ctx, center, now)
         }
 
-        // 指针
-        this.drawPointerHour(contextClock, this.configFrame.center)
-        this.drawPointerMinute(contextClock, this.configFrame.center)
-        this.drawPointerSecond(contextClock, this.configFrame.center)
+        this.drawPointerHour(ctx, center, now)
+        this.drawPointerMinute(ctx, center, now)
+        this.drawPointerSecond(ctx, center, now)
+        this.drawCenter(ctx, center)
 
-        // 中心点
-        this.drawCenter(contextClock, this.configFrame.center)
-
-
-        // 左下角显示所有参数值
         if (this.isShowDetailInfo){
-            this.showAllInfo(contextClock)
+            this.showAllInfo(ctx)
         }
 
         if (this.isPlayConstantly) {
@@ -277,13 +305,13 @@ class AnimateClockCanvas {
     }
 
     // 展示日期、星期
-    drawWeekAndDate(ctx, center){
+    drawWeekAndDate(ctx, center, now = new Date()){
         ctx.save()
         const fontSize = this.configClock.dateFontSize
         ctx.font = `${fontSize}px Galvji`
         ctx.textBaseline = 'middle'  // 文字纵向居中 绘制
-        const weekString = WEEK_MAP[new Date().getDay()]
-        const dateString = String(new Date().getDate())
+        const weekString = WEEK_MAP[now.getDay()]
+        const dateString = String(now.getDate())
         // 星期
         ctx.fillStyle = THEME[this.theme].colorPointerSecond
         ctx.fillText(weekString, center.x + this.configClock.panelRadius / 2 ,center.y)
@@ -311,70 +339,91 @@ class AnimateClockCanvas {
     drawClockPanelHour(ctx, center){
         const lineHeight = this.configClock.lengthSplitHour
         const offsetCenter = this.configClock.panelRadius
+        const labels = CLOCK_ARRAY[this.numberType]
+        const lineWidth = this.configClock.lineWidthHour
+        const labelOffset = this.configClock.labelOffsetHour
+        const font = `${this.configClock.labelFontSizeHour}px Galvji`
+
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = THEME[this.theme].colorMain
+        ctx.textAlign = 'center'
+        ctx.font = font
         for (let i = 0; i < 12; i++) {
             ctx.rotate(Math.PI / 6)
-            ctx.fillRect(-this.configClock.lineWidthHour / 2, -offsetCenter, this.configClock.lineWidthHour, lineHeight)
-            ctx.textAlign = 'center'
-            ctx.font = `${this.configClock.labelFontSizeHour}px Galvji`
-            ctx.fillText(CLOCK_ARRAY[this.numberType][i], 0, -offsetCenter - this.configClock.labelOffsetHour,)
+            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
+            ctx.fillText(labels[i], 0, -offsetCenter - labelOffset)
         }
         ctx.restore()
     }
 
-    // 表盘刻度：分钟
-    drawClockPanelMinutes(ctx, center){
+    // 表盘刻度线：分钟（静态）
+    drawClockPanelMinuteTicks(ctx, center){
         const lineHeight = this.configClock.lengthSplitMinute
         const offsetCenter = this.configClock.panelRadius
-        const seconds = new Date().getSeconds()
-        const ms = new Date().getMilliseconds()
+        const lineWidth = this.configClock.lineWidthMinute
 
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = THEME[this.theme].colorScaleSecond
         for (let i = 0; i < 60; i++) {
-
-            let fontSize = this.configClock.labelFontSizeMinute
-            if (this.isZoomSecond){
-                // 放大实时秒数
-                const distance1 = Math.abs((seconds + ms / 1000) - (i + 1))  // 距离当前秒数的距离
-                const distance2 = seconds + ms / 1000
-                const distance = Math.min(distance1, distance2)
-                if (distance < 1.5){
-                    fontSize = (2.5 - distance) * fontSize
-                } else {
-
-                }
-            }
-
             ctx.rotate(Math.PI / 30)
-            ctx.fillRect(-this.configClock.lineWidthMinute / 2, -offsetCenter, this.configClock.lineWidthMinute, lineHeight)
-            ctx.textAlign = 'center'
-            ctx.font = `${fontSize}px Galvji`
-
-            if (this.isSkipHourLabel){
-                if ((i + 1) % 5 !== 0) {
-                    ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
-                }
-            } else {
-                ctx.fillText(i + 1, 0, -offsetCenter - this.configClock.labelOffsetMinute,)
-            }
-
+            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
         }
         ctx.restore()
     }
+
+    // 表盘分钟数字（zoom 时每帧重绘，否则进静态层）
+    drawClockPanelMinuteLabels(ctx, center, now){
+        const offsetCenter = this.configClock.panelRadius
+        const labelOffset = this.configClock.labelOffsetMinute
+        const baseFontSize = this.configClock.labelFontSizeMinute
+        const seconds = now ? now.getSeconds() + now.getMilliseconds() / 1000 : -1
+
+        ctx.save()
+        ctx.translate(center.x, center.y)
+        ctx.fillStyle = THEME[this.theme].colorScaleSecond
+        ctx.textAlign = 'center'
+
+        for (let i = 0; i < 60; i++) {
+            ctx.rotate(Math.PI / 30)
+
+            if (this.isSkipHourLabel && (i + 1) % 5 === 0) {
+                continue
+            }
+
+            let fontSize = baseFontSize
+            if (this.isZoomSecond && seconds >= 0) {
+                const distance1 = Math.abs(seconds - (i + 1))
+                const distance = Math.min(distance1, seconds)
+                if (distance < 1.5) {
+                    fontSize = (2.5 - distance) * fontSize
+                }
+            }
+
+            ctx.font = `${fontSize}px Galvji`
+            ctx.fillText(i + 1, 0, -offsetCenter - labelOffset)
+        }
+        ctx.restore()
+    }
+
+    // 兼容旧调用：刻度线 + 数字
+    drawClockPanelMinutes(ctx, center, now){
+        this.drawClockPanelMinuteTicks(ctx, center)
+        this.drawClockPanelMinuteLabels(ctx, center, now)
+    }
+
     // 表盘刻度：秒
     drawClockPanelSeconds(ctx, center){
         const lineHeight = this.configClock.lengthSplitSecond
         const offsetCenter = this.configClock.panelRadius
+        const lineWidth = this.configClock.lineWidthSecond
         ctx.save()
         ctx.translate(center.x, center.y)
         ctx.fillStyle = THEME[this.theme].colorScaleSecond
         for (let i = 0; i < 300; i++) {
             ctx.rotate(Math.PI * 2 / 300)
-            ctx.fillRect(-this.configClock.lineWidthSecond / 2, -offsetCenter, this.configClock.lineWidthSecond, lineHeight)
+            ctx.fillRect(-lineWidth / 2, -offsetCenter, lineWidth, lineHeight)
         }
         ctx.restore()
     }
@@ -391,10 +440,10 @@ class AnimateClockCanvas {
     }
 
     // 时针
-    drawPointerHour(ctx, center){
-        const seconds = new Date().getSeconds()
-        const minutes = new Date().getMinutes()
-        const hours = new Date().getHours()
+    drawPointerHour(ctx, center, now = new Date()){
+        const seconds = now.getSeconds()
+        const minutes = now.getMinutes()
+        const hours = now.getHours()
         const rotateAngle = Math.PI * 2 * (hours / 12) + Math.PI +  Math.PI / 6 * ((minutes + seconds/60) / 60) // 秒 + 毫秒的角度
         this.rotateAngleHour = rotateAngle
         const lineWidth = this.configClock.widthHourPointer
@@ -457,10 +506,10 @@ class AnimateClockCanvas {
     }
 
     // 分针
-    drawPointerMinute(ctx, center){
-        const ms = new Date().getMilliseconds()
-        const seconds = new Date().getSeconds()
-        const minutes = new Date().getMinutes()
+    drawPointerMinute(ctx, center, now = new Date()){
+        const ms = now.getMilliseconds()
+        const seconds = now.getSeconds()
+        const minutes = now.getMinutes()
         const rotateAngle = Math.PI * 2 * (minutes / 60) + Math.PI   + Math.PI / 30 * ( ms / 1000 / 60 + seconds / 60)     // 秒 + 毫秒的角度
         this.rotateAngleMinute = rotateAngle
         const lineWidth = this.configClock.widthMinutePointer
@@ -526,9 +575,9 @@ class AnimateClockCanvas {
     }
 
     // 秒针
-    drawPointerSecond(ctx, center){
-        const ms = new Date().getMilliseconds()
-        const seconds = new Date().getSeconds()
+    drawPointerSecond(ctx, center, now = new Date()){
+        const ms = now.getMilliseconds()
+        const seconds = now.getSeconds()
         const rotateAngle = Math.PI * 2 * (ms / 1000 / 60 + seconds / 60)  + Math.PI  // 秒 + 毫秒的角度
         this.rotateAngleSecond = rotateAngle
         const lineWidth = this.configClock.widthSecondPointer
@@ -559,4 +608,3 @@ class AnimateClockCanvas {
         ctx.restore()
     }
 }
-
